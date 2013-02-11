@@ -4,19 +4,29 @@ version = 1.0
 core = 7.x
 
 ;--------------------- styles ----------------------------
-stylesheets[screen][] = library/stylesheet/styles.css
+stylesheets[all][] = library/stylesheet/styles.css
 
 ;--------------------- regions ---------------------------
-regions[page_top] = PAGE TOP
-regions[header] = HEADER
-regions[sidebar_first] = SIDEBAR FIRST
-regions[content_top] = CONTENT TOP
-regions[content] = CONTENT
-regions[content_bottom] = CONTENT BOTTOM
-regions[sidebar_second] = SIDEBAR SECOND
-regions[footer] = FOOTER
-regions[page_bottom] = PAGE BOTTOM
+regions[page_top]		= PAGE TOP
+regions[header]			= HEADER
+regions[sidebar_first]	= SIDEBAR FIRST
+regions[content_top]	= CONTENT TOP
+regions[content]		= CONTENT
+regions[content_bottom]	= CONTENT BOTTOM
+regions[sidebar_second]	= SIDEBAR SECOND
+regions[footer]			= FOOTER
+regions[page_bottom]	= PAGE BOTTOM
 
 ;--------------------- javascripts ------------------------
-scripts[] = scripts/theme-settings.js
-scripts[] = scripts/master.js
+scripts[] = library/javascripts/bootstrap-alert.js
+scripts[] = library/javascripts/bootstrap-button.js
+scripts[] = library/javascripts/bootstrap-carousel.js
+scripts[] = library/javascripts/bootstrap-dropdown.js
+scripts[] = library/javascripts/bootstrap-collapse.js
+scripts[] = library/javascripts/bootstrap-modal.js
+scripts[] = library/javascripts/bootstrap-popover.js
+scripts[] = library/javascripts/bootstrap-scrollspy.js
+scripts[] = library/javascripts/bootstrap-tab.js
+scripts[] = library/javascripts/bootstrap-tooltip.js
+scripts[] = library/javascripts/bootstrap-transition.js
+scripts[] = library/javascripts/bootstrap-typeahead.js
