@@ -8,6 +8,11 @@ function bootstrap_html_head_alter(&$head_elements) {
   );
 }
 
+function bootstrap_js_alter(&$javascript) {
+	//Swap out jQuery to use an updated version of the library.
+	$javascript['misc/jquery.js']['data'] = drupal_get_path('theme', 'bootstrap') . '/library/javscripts/jquery.js';
+}
+
 /**
  * Override or insert variables in the html_tag theme function.
  */

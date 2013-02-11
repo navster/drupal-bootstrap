@@ -30,3 +30,4 @@ scripts[] = library/javascripts/bootstrap-tab.js
 scripts[] = library/javascripts/bootstrap-tooltip.js
 scripts[] = library/javascripts/bootstrap-transition.js
 scripts[] = library/javascripts/bootstrap-typeahead.js
+
