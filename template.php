@@ -32,24 +32,6 @@ function bootstrap_process_html_tag(&$variables) {
  *  A sequential array of variables to pass to the theme template.
  */
 function bootstrap_preprocess_html(&$vars) {
-
-  /* HTML classes
-  ---------------------------------------------------------------------- */
-  // To add dynamically your own classes use $vars['classes_array'][] = 'my_class';
-  
-  // Optionaly add the theme setting name in the <body> when this one is activate
-  if (theme_get_setting('bootstrap_wireframes')) {
-    $vars['classes_array'][] = 'wireframes';
-  }
-  if (theme_get_setting('bootstrap_css_prototyping')) {
-    $vars['classes_array'][] = 'prototyping';
-  }
-  if (theme_get_setting('bootstrap_grid_system')) {
-    $vars['classes_array'][] = 'grid-system';
-  }
-  if (theme_get_setting('bootstrap_display_viewport')) {
-    $vars['classes_array'][] = 'display-viewport';
-  }
     
   /* IE conditionnal stylesheets
   ---------------------------------------------------------------------- */
