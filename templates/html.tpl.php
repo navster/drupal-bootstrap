@@ -19,14 +19,13 @@
 </head>
 
 <body class="<?php print $classes; ?>" <?php print $attributes;?>>
-
-  <div id="skip-link">
-    <a href="#middle-content" class="element-invisible element-focusable"><?php print t('Skip to main content'); ?></a>
-  </div>
-  <?php print $page_top; ?>
-  <?php print $page; ?>
-  <?php print $page_bottom; ?>
-  
+	<div class="container">
+  		<div class="row">
+		<?php print $page_top; ?>
+		<?php print $page; ?>
+		<?php print $page_bottom; ?>
+		</div>
+  	</div>
   <?php print $scripts; ?>
   
 </body>
