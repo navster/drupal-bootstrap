@@ -1,4 +1,16 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]> <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]> <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
 
+<head>
+	<?php print $head; ?>
+	<?php print $styles; ?>
+<title><?php print $head_title; ?></title>
+</head>
+<body class="<?php print $classes; ?>">
+	
   <div id="branding" class="clearfix">
     <?php print $breadcrumb; ?>
     <?php print render($title_prefix); ?>
@@ -33,3 +45,5 @@
     </div>
 
   </div>
+</body>
+</html>

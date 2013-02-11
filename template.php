@@ -1,115 +1,222 @@
 <?php
 
 /**
- * Override or insert variables into the maintenance page template.
+ * Here we override the default HTML output of drupal.
+ * refer to http://drupal.org/node/550722
  */
-function seven_preprocess_maintenance_page(&$vars) {
-  // While markup for normal pages is split into page.tpl.php and html.tpl.php,
-  // the markup for the maintenance page is all in the single
-  // maintenance-page.tpl.php template. So, to have what's done in
-  // seven_preprocess_html() also happen on the maintenance page, it has to be
-  // called here.
-  seven_preprocess_html($vars);
+ 
+// Auto-rebuild the theme registry during theme development.
+if (theme_get_setting('clear_registry')) {
+  // Rebuild .info data.
+  system_rebuild_theme_data();
+  // Rebuild theme registry.
+  drupal_theme_rebuild();
+}
+// Add Zen Tabs styles
+if (theme_get_setting('basic_tabs')) {
+  drupal_add_css( drupal_get_path('theme', 'basic') .'/css/tabs.css');
 }
 
-/**
- * Override or insert variables into the html template.
- */
-function seven_preprocess_html(&$vars) {
-  // Add conditional CSS for IE8 and below.
-  drupal_add_css(path_to_theme() . '/ie.css', array('group' => CSS_THEME, 'browsers' => array('IE' => 'lte IE 8', '!IE' => FALSE), 'weight' => 999, 'preprocess' => FALSE));
-  // Add conditional CSS for IE7 and below.
-  drupal_add_css(path_to_theme() . '/ie7.css', array('group' => CSS_THEME, 'browsers' => array('IE' => 'lte IE 7', '!IE' => FALSE), 'weight' => 999, 'preprocess' => FALSE));
-  // Add conditional CSS for IE6.
-  drupal_add_css(path_to_theme() . '/ie6.css', array('group' => CSS_THEME, 'browsers' => array('IE' => 'lte IE 6', '!IE' => FALSE), 'weight' => 999, 'preprocess' => FALSE));
-}
+function basic_preprocess_page(&$vars, $hook) {
+  if (isset($vars['node_title'])) {
+    $vars['title'] = $vars['node_title'];
+  }
+  // Adding a class to #page in wireframe mode
+  if (theme_get_setting('wireframe_mode')) {
+    $vars['classes_array'][] = 'wireframe-mode';
+  }
+  // Adding classes wether #navigation is here or not
+  if (!empty($vars['main_menu']) or !empty($vars['sub_menu'])) {
+    $vars['classes_array'][] = 'with-navigation';
+  }
+  if (!empty($vars['secondary_menu'])) {
+    $vars['classes_array'][] = 'with-subnav';
+  }
 
-/**
- * Override or insert variables into the page template.
- */
-function seven_preprocess_page(&$vars) {
-  $vars['primary_local_tasks'] = $vars['tabs'];
-  unset($vars['primary_local_tasks']['#secondary']);
-  $vars['secondary_local_tasks'] = array(
-    '#theme' => 'menu_local_tasks',
-    '#secondary' => $vars['tabs']['#secondary'],
-  );
-}
-
-/**
- * Display the list of available node types for node creation.
- */
-function seven_node_add_list($variables) {
-  $content = $variables['content'];
-  $output = '';
-  if ($content) {
-    $output = '<ul class="admin-list">';
-    foreach ($content as $item) {
-      $output .= '<li class="clearfix">';
-      $output .= '<span class="label">' . l($item['title'], $item['href'], $item['localized_options']) . '</span>';
-      $output .= '<div class="description">' . filter_xss_admin($item['description']) . '</div>';
-      $output .= '</li>';
+  // Add first/last classes to node listings about to be rendered.
+  if (isset($vars['page']['content']['system_main']['nodes'])) {
+    // All nids about to be loaded (without the #sorted attribute).
+    $nids = element_children($vars['page']['content']['system_main']['nodes']);
+    // Only add first/last classes if there is more than 1 node being rendered.
+    if (count($nids) > 1) {
+      $first_nid = reset($nids);
+      $last_nid = end($nids);
+      $first_node = $vars['page']['content']['system_main']['nodes'][$first_nid]['#node'];
+      $first_node->classes_array = array('first');
+      $last_node = $vars['page']['content']['system_main']['nodes'][$last_nid]['#node'];
+      $last_node->classes_array = array('last');
     }
-    $output .= '</ul>';
   }
-  else {
-    $output = '<p>' . t('You have not created any content types yet. Go to the <a href="@create-content">content type creation page</a> to add a new content type.', array('@create-content' => url('admin/structure/types/add'))) . '</p>';
+}
+
+function basic_preprocess_node(&$vars) {
+  // Add a striping class.
+  $vars['classes_array'][] = 'node-' . $vars['zebra'];
+
+  // Merge first/last class (from basic_preprocess_page) into classes array of current node object.
+  $node = $vars['node'];
+  if (!empty($node->classes_array)) {
+    $vars['classes_array'] = array_merge($vars['classes_array'], $node->classes_array);
   }
-  return $output;
+}
+
+function basic_preprocess_block(&$vars, $hook) {
+  // Add a striping class.
+  $vars['classes_array'][] = 'block-' . $vars['block_zebra'];
+
+  // Add first/last block classes
+  $first_last = "";
+  // If block id (count) is 1, it's first in region.
+  if ($vars['block_id'] == '1') {
+    $first_last = "first";
+    $vars['classes_array'][] = $first_last;
+  }
+  // Count amount of blocks about to be rendered in that region.
+  $block_count = count(block_list($vars['elements']['#block']->region));
+  if ($vars['block_id'] == $block_count) {
+    $first_last = "last";
+    $vars['classes_array'][] = $first_last;
+  }
 }
 
 /**
- * Overrides theme_admin_block_content().
+ * Return a themed breadcrumb trail.
  *
- * Use unordered list markup in both compact and extended mode.
+ * @param $breadcrumb
+ *   An array containing the breadcrumb links.
+ * @return
+ *   A string containing the breadcrumb output.
  */
-function seven_admin_block_content($variables) {
-  $content = $variables['content'];
-  $output = '';
-  if (!empty($content)) {
-    $output = system_admin_compact_mode() ? '<ul class="admin-list compact">' : '<ul class="admin-list">';
-    foreach ($content as $item) {
-      $output .= '<li class="leaf">';
-      $output .= l($item['title'], $item['href'], $item['localized_options']);
-      if (isset($item['description']) && !system_admin_compact_mode()) {
-        $output .= '<div class="description">' . filter_xss_admin($item['description']) . '</div>';
+function basic_breadcrumb($variables) {
+  $breadcrumb = $variables['breadcrumb'];
+  // Determine if we are to display the breadcrumb.
+  $show_breadcrumb = theme_get_setting('basic_breadcrumb');
+  if ($show_breadcrumb == 'yes' || $show_breadcrumb == 'admin' && arg(0) == 'admin') {
+
+    // Optionally get rid of the homepage link.
+    $show_breadcrumb_home = theme_get_setting('basic_breadcrumb_home');
+    if (!$show_breadcrumb_home) {
+      array_shift($breadcrumb);
+    }
+
+    // Return the breadcrumb with separators.
+    if (!empty($breadcrumb)) {
+      $breadcrumb_separator = theme_get_setting('basic_breadcrumb_separator');
+      $trailing_separator = $title = '';
+      if (theme_get_setting('basic_breadcrumb_title')) {
+        $item = menu_get_item();
+        if (!empty($item['tab_parent'])) {
+          // If we are on a non-default tab, use the tab's title.
+          $title = check_plain($item['title']);
+        }
+        else {
+          $title = drupal_get_title();
+        }
+        if ($title) {
+          $trailing_separator = $breadcrumb_separator;
+        }
       }
-      $output .= '</li>';
+      elseif (theme_get_setting('basic_breadcrumb_trailing')) {
+        $trailing_separator = $breadcrumb_separator;
+      }
+
+      // Provide a navigational heading to give context for breadcrumb links to
+      // screen-reader users. Make the heading invisible with .element-invisible.
+      $heading = '<h2 class="element-invisible">' . t('You are here') . '</h2>';
+
+      return $heading . '<div class="breadcrumb">' . implode($breadcrumb_separator, $breadcrumb) . $trailing_separator . $title . '</div>';
     }
-    $output .= '</ul>';
   }
-  return $output;
+  // Otherwise, return an empty string.
+  return '';
 }
 
 /**
- * Override of theme_tablesort_indicator().
+ * Converts a string to a suitable html ID attribute.
  *
- * Use our own image versions, so they show up as black and not gray on gray.
- */
-function seven_tablesort_indicator($variables) {
-  $style = $variables['style'];
-  $theme_path = drupal_get_path('theme', 'seven');
-  if ($style == 'asc') {
-    return theme('image', array('path' => $theme_path . '/images/arrow-asc.png', 'alt' => t('sort ascending'), 'width' => 13, 'height' => 13, 'title' => t('sort ascending')));
+ * http://www.w3.org/TR/html4/struct/global.html#h-7.5.2 specifies what makes a
+ * valid ID attribute in HTML. This function:
+ *
+ * - Ensure an ID starts with an alpha character by optionally adding an 'n'.
+ * - Replaces any character except A-Z, numbers, and underscores with dashes.
+ * - Converts entire string to lowercase.
+ *
+ * @param $string
+ * 	The string
+ * @return
+ * 	The converted string
+ */	
+function basic_id_safe($string) {
+  // Replace with dashes anything that isn't A-Z, numbers, dashes, or underscores.
+  $string = strtolower(preg_replace('/[^a-zA-Z0-9_-]+/', '-', $string));
+  // If the first character is not a-z, add 'n' in front.
+  if (!ctype_lower($string{0})) { // Don't use ctype_alpha since its locale aware.
+    $string = 'id'. $string;
   }
-  else {
-    return theme('image', array('path' => $theme_path . '/images/arrow-desc.png', 'alt' => t('sort descending'), 'width' => 13, 'height' => 13, 'title' => t('sort descending')));
-  }
+  return $string;
 }
 
 /**
- * Implements hook_css_alter().
+ * Generate the HTML output for a menu link and submenu.
+ *
+ * @param $variables
+ *  An associative array containing:
+ *   - element: Structured array data for a menu link.
+ *
+ * @return
+ *  A themed HTML string.
+ *
+ * @ingroup themeable
+ * 
  */
-function seven_css_alter(&$css) {
-  // Use Seven's vertical tabs style instead of the default one.
-  if (isset($css['misc/vertical-tabs.css'])) {
-    $css['misc/vertical-tabs.css']['data'] = drupal_get_path('theme', 'seven') . '/vertical-tabs.css';
+function basic_menu_link(array $variables) {
+  $element = $variables['element'];
+  $sub_menu = '';
+
+  if ($element['#below']) {
+    $sub_menu = drupal_render($element['#below']);
   }
-  if (isset($css['misc/vertical-tabs-rtl.css'])) {
-    $css['misc/vertical-tabs-rtl.css']['data'] = drupal_get_path('theme', 'seven') . '/vertical-tabs-rtl.css';
+  $output = l($element['#title'], $element['#href'], $element['#localized_options']);
+  // Adding a class depending on the TITLE of the link (not constant)
+  $element['#attributes']['class'][] = basic_id_safe($element['#title']);
+  // Adding a class depending on the ID of the link (constant)
+  $element['#attributes']['class'][] = 'mid-' . $element['#original_link']['mlid'];
+  return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
+}
+
+/**
+ * Override or insert variables into theme_menu_local_task().
+ */
+function basic_preprocess_menu_local_task(&$variables) {
+  $link =& $variables['element']['#link'];
+
+  // If the link does not contain HTML already, check_plain() it now.
+  // After we set 'html'=TRUE the link will not be sanitized by l().
+  if (empty($link['localized_options']['html'])) {
+    $link['title'] = check_plain($link['title']);
   }
-  // Use Seven's jQuery UI theme style instead of the default one.
-  if (isset($css['misc/ui/jquery.ui.theme.css'])) {
-    $css['misc/ui/jquery.ui.theme.css']['data'] = drupal_get_path('theme', 'seven') . '/jquery.ui.theme.css';
+  $link['localized_options']['html'] = TRUE;
+  $link['title'] = '<span class="tab">' . $link['title'] . '</span>';
+}
+
+/**
+ * Duplicate of theme_menu_local_tasks() but adds clearfix to tabs.
+ */
+function basic_menu_local_tasks(&$variables) {  
+  $output = '';
+
+  if (!empty($variables['primary'])) {
+    $variables['primary']['#prefix'] = '<h2 class="element-invisible">' . t('Primary tabs') . '</h2>';
+    $variables['primary']['#prefix'] .= '<ul class="tabs primary clearfix">';
+    $variables['primary']['#suffix'] = '</ul>';
+    $output .= drupal_render($variables['primary']);
   }
+  if (!empty($variables['secondary'])) {
+    $variables['secondary']['#prefix'] = '<h2 class="element-invisible">' . t('Secondary tabs') . '</h2>';
+    $variables['secondary']['#prefix'] .= '<ul class="tabs secondary clearfix">';
+    $variables['secondary']['#suffix'] = '</ul>';
+    $output .= drupal_render($variables['secondary']);
+  }
+
+  return $output;
 }

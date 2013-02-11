@@ -3,12 +3,20 @@ description = Custom theme using bootstrap
 version = 1.0
 core = 7.x
 
+;--------------------- styles ----------------------------
 stylesheets[screen][] = library/stylesheet/styles.css
-settings[shortcut_module_link] = 1
-regions[content] = Content
-regions[help] = Help
-regions[page_top] = Page top
-regions[page_bottom] = Page bottom
-regions[sidebar_first] = First sidebar
-regions_hidden[] = sidebar_first
 
+;--------------------- regions ---------------------------
+regions[page_top] = PAGE TOP
+regions[header] = HEADER
+regions[sidebar_first] = SIDEBAR FIRST
+regions[content_top] = CONTENT TOP
+regions[content] = CONTENT
+regions[content_bottom] = CONTENT BOTTOM
+regions[sidebar_second] = SIDEBAR SECOND
+regions[footer] = FOOTER
+regions[page_bottom] = PAGE BOTTOM
+
+;--------------------- javascripts ------------------------
+scripts[] = scripts/theme-settings.js
+scripts[] = scripts/master.js
