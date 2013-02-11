@@ -4,7 +4,7 @@ version = 1.0
 core = 7.x
 
 ;--------------------- styles ----------------------------
-stylesheets[all][] = library/stylesheet/styles.css
+stylesheets[all][] = library/stylesheets/styles.css
 
 ;--------------------- regions ---------------------------
 regions[page_top]		= PAGE TOP
