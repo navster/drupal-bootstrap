@@ -1,222 +1,206 @@
-<?php
+<?php 
+/**
+ * Changes the default meta content-type tag to the shorter HTML5 version
+ */
+function bigdaddy_html_head_alter(&$head_elements) {
+  $head_elements['system_meta_content_type']['#attributes'] = array(
+    'charset' => 'utf-8'
+  );
+}
 
 /**
- * Here we override the default HTML output of drupal.
- * refer to http://drupal.org/node/550722
+ * Override or insert variables in the html_tag theme function.
  */
+function bigdaddy_process_html_tag(&$variables) {
+  $tag = &$variables['element'];
+
+  if ($tag['#tag'] == 'style' || $tag['#tag'] == 'script') {
+    // Remove redundant type attribute and CDATA comments.
+    unset($tag['#attributes']['type'], $tag['#value_prefix'], $tag['#value_suffix']);
+
+    // Remove media="all" but leave others unaffected.
+    if (isset($tag['#attributes']['media']) && $tag['#attributes']['media'] === 'all') {
+      unset($tag['#attributes']['media']);
+    }
+  }
+}
+
+/**
+ * Override or insert variables into the HTML templates.
+ *
+ * @param $vars
+ *  A sequential array of variables to pass to the theme template.
+ */
+function bigdaddy_preprocess_html(&$vars) {
+
+  /* HTML classes
+  ---------------------------------------------------------------------- */
+  // To add dynamically your own classes use $vars['classes_array'][] = 'my_class';
+  
+  // Optionaly add the theme setting name in the <body> when this one is activate
+  if (theme_get_setting('bigdaddy_wireframes')) {
+    $vars['classes_array'][] = 'wireframes';
+  }
+  if (theme_get_setting('bigdaddy_css_prototyping')) {
+    $vars['classes_array'][] = 'prototyping';
+  }
+  if (theme_get_setting('bigdaddy_grid_system')) {
+    $vars['classes_array'][] = 'grid-system';
+  }
+  if (theme_get_setting('bigdaddy_display_viewport')) {
+    $vars['classes_array'][] = 'display-viewport';
+  }
+    
+  /* IE conditionnal stylesheets
+  ---------------------------------------------------------------------- */
+  
+  /* --- For lte IE 8 --- */
+  drupal_add_css(path_to_theme() . '/styles/ie.css', array('group' => CSS_THEME, 'browsers' => array('IE' => 'lte IE 8', '!IE' => FALSE), 'preprocess' => FALSE));
+    
+}
+
+/**
+ * Override or insert variables into the PAGE templates.
+ *
+ * @param $vars
+ *  A sequential array of variables to pass to the theme template.
+ */
+function bigdaddy_preprocess_page(&$vars) {
+
+  /* PAGE classes
+  ---------------------------------------------------------------------- */
+  // To add dynamically your own classes use $vars['classes_array'][] = 'my_class';
+    
+  /* USER ACCOUNT
+  ---------------------------------------------------------------------- */  
+  // Removes the tabs from user login, register, & password. Also fixes page titles
+  // Please check https://github.com/mortendk/De-Drupalizing-the-Login-Form OR check the mothership theme
+  
+  switch (current_path()) {
+    case 'user':
+      $vars['title'] = t('Login'); // Don't work in the preprocess fonction
+      unset($vars['tabs']); // Undefined variable
+      break;    
+    case 'user/register':
+      $vars['title'] = t('New account');
+      unset($vars['tabs']);
+      break;
+    case 'user/password':
+      $vars['title'] = t('DOH! I forget my password');
+      unset($vars['tabs']);
+      break;
+    default:
+      // No actions
+      break;
+  }  
+          
+}
+
+/**
+ * Override or insert variables into the NODE templates.
+ *
+ * @param $vars
+ *  A sequential array of variables to pass to the theme template.
+ */
+function bigdaddy_preprocess_node(&$vars) {
+  
+  /* NODE classes
+  ---------------------------------------------------------------------- */
+  // To add dynamically your own classes use $vars['classes_array'][] = 'my_class';
+  
+}
+
+/**
+ * Override or insert variables into the BLOCK templates.
+ *
+ * @param $vars
+ *  A sequential array of variables to pass to the theme template.
+ */
+function bigdaddy_preprocess_block(&$vars) {
+
+  /* BLOCK classes
+  ---------------------------------------------------------------------- */
+  // To add dynamically your own classes use $vars['classes_array'][] = 'my_class';
+    
+}
+
+/**
+* Alter the default Drupal's system styles.
+*/
+function bigdaddy_css_alter(&$css) {
+  
+  unset($css[drupal_get_path('module', 'comment') . '/comment.css']);
+  unset($css[drupal_get_path('module', 'system') . '/system.messages.css']);
+  unset($css[drupal_get_path('module', 'system') . '/system.menus.css']);
+  unset($css[drupal_get_path('module', 'system') . '/system.theme.css']);
+  unset($css[drupal_get_path('module', 'user') . '/user.css']);
+
+}
+
+/**
+ * Alter the primary links.
+ */
+function bigdaddy_menu_tree__main_menu($variables) {
+
+  return '<nav role="navigation"><ul class="menu">' . $variables['tree'] . '</ul></nav>';
+
+}
+
+/**
+ * Changes the search form to use the HTML5 "search" input attribute
+ */
+function bigdaddy_preprocess_search_block_form(&$vars) {
+  $vars['search_form'] = str_replace('type="text"', 'type="search"', $vars['search_form']);
+}
+
+/**
+ * Alter all the webforms and change the label to the HTML5 attribute "placeholder".
+ */
+if (theme_get_setting('bigdaddy_html5_placeholder')) {
+  
+  function bigdaddy_form_alter(&$form, &$form_state) { 
+    
+    foreach($form as $key => $value) {
+      if ($key == 'submitted') {
+        foreach ($value as $key2 => $value2) {
+          if ($key2 != '#tree') {
+            $form['submitted'][$key2]['#attributes'] = array('placeholder' => array($value2['#title']));
+          }
+        }
+      }
+    }
+
+  }
+}
+
+/**
+* Alter the user login form.
+*/
+function bigdaddy_form_user_login_alter(&$form, &$form_state) { 
  
-// Auto-rebuild the theme registry during theme development.
-if (theme_get_setting('clear_registry')) {
-  // Rebuild .info data.
-  system_rebuild_theme_data();
-  // Rebuild theme registry.
-  drupal_theme_rebuild();
-}
-// Add Zen Tabs styles
-if (theme_get_setting('basic_tabs')) {
-  drupal_add_css( drupal_get_path('theme', 'basic') .'/css/tabs.css');
-}
+  $form['#prefix'] = '<h1>'.t('Login/Register').'</h1>';
+ 
+  // Add a link above the form to the user account creation page
+  $form['name']['#prefix'] = l(t('Register a new account'), 'user/register', array('attributes' => array('class' => 'login-register')));
+  
+  // Add a link under the form to the forgotten password page
+  $form['pass']['#suffix'] = l(t('Forgot password?'), 'user/password', array('attributes' => array('class' => 'login-password')));
+  
+  // Add the HTML5 PLaceholder attribute into the login and password input and unset the label + descrption
+  unset($form['name']['#title']);
+  unset($form['name']['#description']);
+  unset($form['pass']['#title']);
+  unset($form['pass']['#description']);
+  $form['name']['#attributes']['placeholder'] = t('Your login');
+  $form['pass']['#attributes']['placeholder'] = t('Your password');  
 
-function basic_preprocess_page(&$vars, $hook) {
-  if (isset($vars['node_title'])) {
-    $vars['title'] = $vars['node_title'];
-  }
-  // Adding a class to #page in wireframe mode
-  if (theme_get_setting('wireframe_mode')) {
-    $vars['classes_array'][] = 'wireframe-mode';
-  }
-  // Adding classes wether #navigation is here or not
-  if (!empty($vars['main_menu']) or !empty($vars['sub_menu'])) {
-    $vars['classes_array'][] = 'with-navigation';
-  }
-  if (!empty($vars['secondary_menu'])) {
-    $vars['classes_array'][] = 'with-subnav';
-  }
-
-  // Add first/last classes to node listings about to be rendered.
-  if (isset($vars['page']['content']['system_main']['nodes'])) {
-    // All nids about to be loaded (without the #sorted attribute).
-    $nids = element_children($vars['page']['content']['system_main']['nodes']);
-    // Only add first/last classes if there is more than 1 node being rendered.
-    if (count($nids) > 1) {
-      $first_nid = reset($nids);
-      $last_nid = end($nids);
-      $first_node = $vars['page']['content']['system_main']['nodes'][$first_nid]['#node'];
-      $first_node->classes_array = array('first');
-      $last_node = $vars['page']['content']['system_main']['nodes'][$last_nid]['#node'];
-      $last_node->classes_array = array('last');
-    }
-  }
-}
-
-function basic_preprocess_node(&$vars) {
-  // Add a striping class.
-  $vars['classes_array'][] = 'node-' . $vars['zebra'];
-
-  // Merge first/last class (from basic_preprocess_page) into classes array of current node object.
-  $node = $vars['node'];
-  if (!empty($node->classes_array)) {
-    $vars['classes_array'] = array_merge($vars['classes_array'], $node->classes_array);
-  }
-}
-
-function basic_preprocess_block(&$vars, $hook) {
-  // Add a striping class.
-  $vars['classes_array'][] = 'block-' . $vars['block_zebra'];
-
-  // Add first/last block classes
-  $first_last = "";
-  // If block id (count) is 1, it's first in region.
-  if ($vars['block_id'] == '1') {
-    $first_last = "first";
-    $vars['classes_array'][] = $first_last;
-  }
-  // Count amount of blocks about to be rendered in that region.
-  $block_count = count(block_list($vars['elements']['#block']->region));
-  if ($vars['block_id'] == $block_count) {
-    $first_last = "last";
-    $vars['classes_array'][] = $first_last;
-  }
 }
 
 /**
- * Return a themed breadcrumb trail.
- *
- * @param $breadcrumb
- *   An array containing the breadcrumb links.
- * @return
- *   A string containing the breadcrumb output.
- */
-function basic_breadcrumb($variables) {
-  $breadcrumb = $variables['breadcrumb'];
-  // Determine if we are to display the breadcrumb.
-  $show_breadcrumb = theme_get_setting('basic_breadcrumb');
-  if ($show_breadcrumb == 'yes' || $show_breadcrumb == 'admin' && arg(0) == 'admin') {
+* Alter any form.
+*/
+function bigdaddy_form_your_form_id_alter(&$form, &$form_state) { 
 
-    // Optionally get rid of the homepage link.
-    $show_breadcrumb_home = theme_get_setting('basic_breadcrumb_home');
-    if (!$show_breadcrumb_home) {
-      array_shift($breadcrumb);
-    }
+  //print dpm($form);
 
-    // Return the breadcrumb with separators.
-    if (!empty($breadcrumb)) {
-      $breadcrumb_separator = theme_get_setting('basic_breadcrumb_separator');
-      $trailing_separator = $title = '';
-      if (theme_get_setting('basic_breadcrumb_title')) {
-        $item = menu_get_item();
-        if (!empty($item['tab_parent'])) {
-          // If we are on a non-default tab, use the tab's title.
-          $title = check_plain($item['title']);
-        }
-        else {
-          $title = drupal_get_title();
-        }
-        if ($title) {
-          $trailing_separator = $breadcrumb_separator;
-        }
-      }
-      elseif (theme_get_setting('basic_breadcrumb_trailing')) {
-        $trailing_separator = $breadcrumb_separator;
-      }
-
-      // Provide a navigational heading to give context for breadcrumb links to
-      // screen-reader users. Make the heading invisible with .element-invisible.
-      $heading = '<h2 class="element-invisible">' . t('You are here') . '</h2>';
-
-      return $heading . '<div class="breadcrumb">' . implode($breadcrumb_separator, $breadcrumb) . $trailing_separator . $title . '</div>';
-    }
-  }
-  // Otherwise, return an empty string.
-  return '';
-}
-
-/**
- * Converts a string to a suitable html ID attribute.
- *
- * http://www.w3.org/TR/html4/struct/global.html#h-7.5.2 specifies what makes a
- * valid ID attribute in HTML. This function:
- *
- * - Ensure an ID starts with an alpha character by optionally adding an 'n'.
- * - Replaces any character except A-Z, numbers, and underscores with dashes.
- * - Converts entire string to lowercase.
- *
- * @param $string
- * 	The string
- * @return
- * 	The converted string
- */	
-function basic_id_safe($string) {
-  // Replace with dashes anything that isn't A-Z, numbers, dashes, or underscores.
-  $string = strtolower(preg_replace('/[^a-zA-Z0-9_-]+/', '-', $string));
-  // If the first character is not a-z, add 'n' in front.
-  if (!ctype_lower($string{0})) { // Don't use ctype_alpha since its locale aware.
-    $string = 'id'. $string;
-  }
-  return $string;
-}
-
-/**
- * Generate the HTML output for a menu link and submenu.
- *
- * @param $variables
- *  An associative array containing:
- *   - element: Structured array data for a menu link.
- *
- * @return
- *  A themed HTML string.
- *
- * @ingroup themeable
- * 
- */
-function basic_menu_link(array $variables) {
-  $element = $variables['element'];
-  $sub_menu = '';
-
-  if ($element['#below']) {
-    $sub_menu = drupal_render($element['#below']);
-  }
-  $output = l($element['#title'], $element['#href'], $element['#localized_options']);
-  // Adding a class depending on the TITLE of the link (not constant)
-  $element['#attributes']['class'][] = basic_id_safe($element['#title']);
-  // Adding a class depending on the ID of the link (constant)
-  $element['#attributes']['class'][] = 'mid-' . $element['#original_link']['mlid'];
-  return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
-}
-
-/**
- * Override or insert variables into theme_menu_local_task().
- */
-function basic_preprocess_menu_local_task(&$variables) {
-  $link =& $variables['element']['#link'];
-
-  // If the link does not contain HTML already, check_plain() it now.
-  // After we set 'html'=TRUE the link will not be sanitized by l().
-  if (empty($link['localized_options']['html'])) {
-    $link['title'] = check_plain($link['title']);
-  }
-  $link['localized_options']['html'] = TRUE;
-  $link['title'] = '<span class="tab">' . $link['title'] . '</span>';
-}
-
-/**
- * Duplicate of theme_menu_local_tasks() but adds clearfix to tabs.
- */
-function basic_menu_local_tasks(&$variables) {  
-  $output = '';
-
-  if (!empty($variables['primary'])) {
-    $variables['primary']['#prefix'] = '<h2 class="element-invisible">' . t('Primary tabs') . '</h2>';
-    $variables['primary']['#prefix'] .= '<ul class="tabs primary clearfix">';
-    $variables['primary']['#suffix'] = '</ul>';
-    $output .= drupal_render($variables['primary']);
-  }
-  if (!empty($variables['secondary'])) {
-    $variables['secondary']['#prefix'] = '<h2 class="element-invisible">' . t('Secondary tabs') . '</h2>';
-    $variables['secondary']['#prefix'] .= '<ul class="tabs secondary clearfix">';
-    $variables['secondary']['#suffix'] = '</ul>';
-    $output .= drupal_render($variables['secondary']);
-  }
-
-  return $output;
 }
