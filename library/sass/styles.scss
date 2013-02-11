@@ -2,4 +2,8 @@
 @import "bootstrap";
 
 // Include responsive Bootstrap styles
-// @import "bootstrap-responsive";
+@import "bootstrap-responsive";
+
+.container {
+	margin-top: 50px;
+}
