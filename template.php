@@ -2,7 +2,7 @@
 /**
  * Changes the default meta content-type tag to the shorter HTML5 version
  */
-function bigdaddy_html_head_alter(&$head_elements) {
+function bootstrap_html_head_alter(&$head_elements) {
   $head_elements['system_meta_content_type']['#attributes'] = array(
     'charset' => 'utf-8'
   );
@@ -11,7 +11,7 @@ function bigdaddy_html_head_alter(&$head_elements) {
 /**
  * Override or insert variables in the html_tag theme function.
  */
-function bigdaddy_process_html_tag(&$variables) {
+function bootstrap_process_html_tag(&$variables) {
   $tag = &$variables['element'];
 
   if ($tag['#tag'] == 'style' || $tag['#tag'] == 'script') {
@@ -31,23 +31,23 @@ function bigdaddy_process_html_tag(&$variables) {
  * @param $vars
  *  A sequential array of variables to pass to the theme template.
  */
-function bigdaddy_preprocess_html(&$vars) {
+function bootstrap_preprocess_html(&$vars) {
 
   /* HTML classes
   ---------------------------------------------------------------------- */
   // To add dynamically your own classes use $vars['classes_array'][] = 'my_class';
   
   // Optionaly add the theme setting name in the <body> when this one is activate
-  if (theme_get_setting('bigdaddy_wireframes')) {
+  if (theme_get_setting('bootstrap_wireframes')) {
     $vars['classes_array'][] = 'wireframes';
   }
-  if (theme_get_setting('bigdaddy_css_prototyping')) {
+  if (theme_get_setting('bootstrap_css_prototyping')) {
     $vars['classes_array'][] = 'prototyping';
   }
-  if (theme_get_setting('bigdaddy_grid_system')) {
+  if (theme_get_setting('bootstrap_grid_system')) {
     $vars['classes_array'][] = 'grid-system';
   }
-  if (theme_get_setting('bigdaddy_display_viewport')) {
+  if (theme_get_setting('bootstrap_display_viewport')) {
     $vars['classes_array'][] = 'display-viewport';
   }
     
@@ -65,7 +65,7 @@ function bigdaddy_preprocess_html(&$vars) {
  * @param $vars
  *  A sequential array of variables to pass to the theme template.
  */
-function bigdaddy_preprocess_page(&$vars) {
+function bootstrap_preprocess_page(&$vars) {
 
   /* PAGE classes
   ---------------------------------------------------------------------- */
@@ -102,7 +102,7 @@ function bigdaddy_preprocess_page(&$vars) {
  * @param $vars
  *  A sequential array of variables to pass to the theme template.
  */
-function bigdaddy_preprocess_node(&$vars) {
+function bootstrap_preprocess_node(&$vars) {
   
   /* NODE classes
   ---------------------------------------------------------------------- */
@@ -116,7 +116,7 @@ function bigdaddy_preprocess_node(&$vars) {
  * @param $vars
  *  A sequential array of variables to pass to the theme template.
  */
-function bigdaddy_preprocess_block(&$vars) {
+function bootstrap_preprocess_block(&$vars) {
 
   /* BLOCK classes
   ---------------------------------------------------------------------- */
@@ -127,7 +127,7 @@ function bigdaddy_preprocess_block(&$vars) {
 /**
 * Alter the default Drupal's system styles.
 */
-function bigdaddy_css_alter(&$css) {
+function bootstrap_css_alter(&$css) {
   
   unset($css[drupal_get_path('module', 'comment') . '/comment.css']);
   unset($css[drupal_get_path('module', 'system') . '/system.messages.css']);
@@ -140,7 +140,7 @@ function bigdaddy_css_alter(&$css) {
 /**
  * Alter the primary links.
  */
-function bigdaddy_menu_tree__main_menu($variables) {
+function bootstrap_menu_tree__main_menu($variables) {
 
   return '<nav role="navigation"><ul class="menu">' . $variables['tree'] . '</ul></nav>';
 
@@ -149,16 +149,16 @@ function bigdaddy_menu_tree__main_menu($variables) {
 /**
  * Changes the search form to use the HTML5 "search" input attribute
  */
-function bigdaddy_preprocess_search_block_form(&$vars) {
+function bootstrap_preprocess_search_block_form(&$vars) {
   $vars['search_form'] = str_replace('type="text"', 'type="search"', $vars['search_form']);
 }
 
 /**
  * Alter all the webforms and change the label to the HTML5 attribute "placeholder".
  */
-if (theme_get_setting('bigdaddy_html5_placeholder')) {
+if (theme_get_setting('bootstrap_html5_placeholder')) {
   
-  function bigdaddy_form_alter(&$form, &$form_state) { 
+  function bootstrap_form_alter(&$form, &$form_state) { 
     
     foreach($form as $key => $value) {
       if ($key == 'submitted') {
@@ -176,7 +176,7 @@ if (theme_get_setting('bigdaddy_html5_placeholder')) {
 /**
 * Alter the user login form.
 */
-function bigdaddy_form_user_login_alter(&$form, &$form_state) { 
+function bootstrap_form_user_login_alter(&$form, &$form_state) { 
  
   $form['#prefix'] = '<h1>'.t('Login/Register').'</h1>';
  
@@ -199,7 +199,7 @@ function bigdaddy_form_user_login_alter(&$form, &$form_state) {
 /**
 * Alter any form.
 */
-function bigdaddy_form_your_form_id_alter(&$form, &$form_state) { 
+function bootstrap_form_your_form_id_alter(&$form, &$form_state) { 
 
   //print dpm($form);
 
