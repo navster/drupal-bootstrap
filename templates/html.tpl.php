@@ -27,7 +27,7 @@
 				</button>
 				<a class="brand" href="#">Project name</a>
 				<div class="nav-collapse collapse">
-					<?php print theme('links', array('links' => menu_navigation_links('menu-site-menu'), 'attributes' => array('class'=> array('nav', 'site-menu')) ));?>
+					<?php print theme('links', array('links' => menu_navigation_links('main-menu'), 'attributes' => array('class'=> array('nav', 'main-menu')) ));?>
 				</div><!--/.nav-collapse -->
 			</div>
 		</div>
