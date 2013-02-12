@@ -8170,4 +8170,13 @@ body {
 .container {
   background: white;
   margin-top: 50px;
+  padding: 20px;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  border-radius: 20px;
+}
+
+/* line 18, ../sass/styles.scss */
+.block {
+  border-top: 3px solid #222222;
 }

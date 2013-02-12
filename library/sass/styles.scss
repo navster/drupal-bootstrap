@@ -11,5 +11,10 @@ body {
 .container {
 	background: white;
 	margin-top: 50px;
+	padding: 20px;
+	@include border-radius(20px);
 }
 
+.block {
+	border-top: 3px solid #222;
+}
