@@ -19,8 +19,9 @@
 </head>
 
 <body class="<?php print $classes; ?>" <?php print $attributes;?>>
-<?php if (!in_array('administrator', array_values($user->roles))) { ?>
-	<div class="navbar navbar-inverse navbar-fixed-top">
+	<div class="container">
+		<div class="row">
+	<div class="navbar navbar-inverse">
 		<div class="navbar-inner">
 			<div class="container-fluid">
 				<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -33,8 +34,7 @@
 			</div>
 		</div>
 	</div>
-<?php } ?>
-	<div class="container">
+		</div>
   		<div class="row">
 		<?php print $page_top; ?>
 		<?php print $page; ?>
