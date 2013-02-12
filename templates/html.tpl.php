@@ -19,6 +19,7 @@
 </head>
 
 <body class="<?php print $classes; ?>" <?php print $attributes;?>>
+<?php if (!in_array('administrator', array_values($user->roles))) { ?>
 	<div class="navbar navbar-inverse navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container-fluid">
@@ -27,11 +28,12 @@
 				</button>
 				<a class="brand" href="#">Project name</a>
 				<div class="nav-collapse collapse">
-					<?php print theme('links', array('links' => menu_navigation_links('main-menu'), 'attributes' => array('class'=> array('nav', 'main-menu')) ));?>
+					<?php print theme('links', array('links' => menu_navigation_links('main-menu'), 'attributes' => array('class'=> array('nav', 'main-menu')) )); ?>
 				</div><!--/.nav-collapse -->
 			</div>
 		</div>
 	</div>
+<?php } ?>
 	<div class="container">
   		<div class="row">
 		<?php print $page_top; ?>
