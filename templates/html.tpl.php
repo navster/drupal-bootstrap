@@ -26,7 +26,7 @@
 				<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
 					<span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
 				</button>
-				<a class="brand" href="#">Project name</a>
+				<a class="brand" href="<?php print $GLOBALS['base_path']; ?>"><?php print t('Home'); ?></a>
 				<div class="nav-collapse collapse">
 					<?php print theme('links', array('links' => menu_navigation_links('main-menu'), 'attributes' => array('class'=> array('nav', 'main-menu')) )); ?>
 				</div><!--/.nav-collapse -->

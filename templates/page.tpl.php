@@ -6,9 +6,6 @@
     <?php if ($logo): ?>
       <a href="<?php print check_url($front_page); ?>" class="logo"><img src="<?php print check_url($logo); ?>" alt="<?php print $site_name; ?>" /></a>
     <?php endif; ?>
-    <?php if ($site_name): ?>
-      <h2 class="site-name"><a href="<?php print check_url($front_page); ?>"><?php print check_plain($site_name); ?></a></h2>
-    <?php endif; ?>
     <?php if ($site_slogan): ?>
       <h3 class="site-slogan"><?php print check_plain($site_slogan); ?></h3>
     <?php endif; ?>
