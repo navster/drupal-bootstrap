@@ -19,27 +19,17 @@
 </head>
 
 <body class="<?php print $classes; ?>" <?php print $attributes;?>>
-	<div class="container">
+	<div class="container">	
 		<div class="row">
-	<div class="navbar navbar-inverse">
-		<div class="navbar-inner">
-			<div class="container-fluid">
-				<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-					<span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
-				</button>
-				<a class="brand" href="<?php print $GLOBALS['base_path']; ?>"><?php print t('Home'); ?></a>
-				<div class="nav-collapse collapse">
-					<?php print theme('links', array('links' => menu_navigation_links('main-menu'), 'attributes' => array('class'=> array('nav', 'main-menu')) )); ?>
-				</div><!--/.nav-collapse -->
+			<div class="span12">
+				<?php print theme('links', array('links' => menu_navigation_links('main-menu'), 'attributes' => array('class'=> array('nav', 'main-menu')) )); ?>
 			</div>
-		</div>
-	</div>
-		</div>
-  		<div class="row">
-		<?php print $page_top; ?>
-		<?php print $page; ?>
-		<?php print $page_bottom; ?>
-		</div>
+			<div class="span12">
+			<?php print $page_top; ?>
+			<?php print $page; ?>
+			<?php print $page_bottom; ?>
+			</div>
+		</div><!-- /row -->
   	</div>
   <?php print $scripts; ?>
   

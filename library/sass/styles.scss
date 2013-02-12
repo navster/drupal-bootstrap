@@ -4,6 +4,12 @@
 // Include responsive Bootstrap styles
 @import "bootstrap-responsive";
 
+body {
+	background: url(../images/bg.png) repeat center center transparent;
+}
+
 .container {
+	background: white;
 	margin-top: 50px;
 }
+
