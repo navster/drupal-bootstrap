@@ -54,10 +54,14 @@ function bootstrap_preprocess_html(&$vars) {
  */
 function bootstrap_preprocess_page(&$vars) {
 
-  /* PAGE classes
-  ---------------------------------------------------------------------- */
-  // To add dynamically your own classes use $vars['classes_array'][] = 'my_class';
-    
+	// To add dynamically your own classes use $vars['classes_array'][] = 'my_class';
+	$page = $vars['page'];
+	// Build navbar menu.
+	$menu_id = variable_get('menu_main_links_source', 'main-menu');
+	$menu_tree = menu_tree($menu_id);
+	$vars['navbar_menu'] = drupal_render($menu_tree);
+
+
   /* USER ACCOUNT
   ---------------------------------------------------------------------- */  
   // Removes the tabs from user login, register, & password. Also fixes page titles
