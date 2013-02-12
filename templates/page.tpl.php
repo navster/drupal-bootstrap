@@ -17,14 +17,6 @@
 	
   <!-- begin MIDDLE -->
   <div id="middle" class="clearfix">
-        
-    <?php if ($page['sidebar_first']): ?>
-    <!-- begin SIDEBAR FIRST -->
-    <aside id="sidebar-first" role="complementary">
-      <?php print render($page['sidebar_first']); ?>
-    </aside>
-    <!-- end SIDEBAR FIRST -->
-	  <?php endif; ?>
 		
     <!-- begin MIDDLE CONTENT -->
     <div id="middle-content" role="main">  
@@ -41,10 +33,10 @@
 	  </div>
     <!-- end MIDDLE CONTENT -->
 		
-	  <?php if ($page['sidebar_second']): ?>
+	  <?php if ($page['sidebar']): ?>
 	  <!-- begin SIDEBAR SECOND -->
-	  <aside id="sidebar-second" role="complementary">
-      <?php print render($page['sidebar_second']); ?>
+	  <aside id="sidebar" role="complementary">
+      <?php print render($page['sidebar']); ?>
     </aside>
     <!-- end SIDEBAR SECOND -->
     <?php endif; ?>
